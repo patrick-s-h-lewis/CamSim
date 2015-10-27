@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+import scrapy
+import CamSim.items as items
+
+class CamharvestSpider(scrapy.Spider):
+    name = "CamHarvest"
+    allowed_domains = ["http://www.ch.cam.ac.uk"]
+    start_urls = [
+        'http://www.ch.cam.ac.uk/publications?page=%s' % page for page in range(1706)
+    ]
+
+    def parse(self, response):
+        recs = response.xpath('//body/div[7]/div/div[2]/div/div/div/div/div/div[1]/div')
+        for rec in recs:
+	    item = items.CamHarvestItem()
+	    desc = rec.xpath('div/div/text()').extract()[1]
+	    item['year'] = rec.xpath('div/div/strong/text()').extract()[0][2:-1]
+	    item['title'] = rec.xpath('div/div/div[1]/text()').extract()[0]
+	    item['free_text'] = rec.xpath('string(.)').extract()[0]
+	    try: 
+                item['doi'] = rec.xpath('div/div/div[2]/a/text()').extract()[0]
+            except:
+	        item['doi'] = None
+            item['authors'] = (desc.split(u' \u2013 ')[0].lower()).split(', ')
+	    item['publication'] = desc.split(u' \u2013 ')[1]
+	    yield item
+
+
+        

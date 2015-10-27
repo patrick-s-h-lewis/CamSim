@@ -1,0 +1,7 @@
+Generate Databases:
+1) run CamHarvest spider
+	scrapy crawl CamHarvest -o CamHarvestData.json
+2) run CamAuthorsPopulator.py
+3) run CamAuthorCorpusGenerator
+4) run SimTrainer
+5) run CamAuthorsSimGen
